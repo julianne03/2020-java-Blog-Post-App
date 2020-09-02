@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "639969239539",
+    "firebase_url": "https://azangazang-pjt.firebaseio.com",
+    "project_id": "azangazang-pjt",
+    "storage_bucket": "azangazang-pjt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:639969239539:android:a7c8f75cc3dd846b5ef286",
+        "android_client_info": {
+          "package_name": "com.example.azangazang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "639969239539-opiobn04dftue4vv4rm5in29utkgqf3h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsviBWbkY0sDOnmcdcWXkrAMHTuLfpjXo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "639969239539-opiobn04dftue4vv4rm5in29utkgqf3h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
