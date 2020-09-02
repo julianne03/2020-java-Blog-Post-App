@@ -61,7 +61,11 @@ public class RegisterActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()) {
-                                    sendToMain();
+
+                                    Intent setupIntent = new Intent(RegisterActivity.this, SetupActivity.class);
+                                    startActivity(setupIntent);
+                                    finish();
+
                                 } else {
                                     String errorMessage = task.getException().getMessage();
                                     Toast.makeText(RegisterActivity.this, "Error: "+errorMessage,Toast.LENGTH_LONG).show();

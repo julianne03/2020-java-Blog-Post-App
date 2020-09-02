@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         ab.show();
         ab.setTitle("아장아장") ;
 
-
     }
 
     @Override
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_logout_btn :
                 logout();
                 return true;
-
             default:
                 return false;
         }
@@ -76,4 +74,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(loginIntent);
         finish();
     }
+
+
 }
