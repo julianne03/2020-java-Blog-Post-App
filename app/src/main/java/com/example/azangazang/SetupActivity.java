@@ -1,5 +1,6 @@
 package com.example.azangazang;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -15,8 +16,15 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -28,6 +36,10 @@ public class SetupActivity extends AppCompatActivity {
 
     private EditText setupName;
     private Button setupBtn;
+    private ProgressBar setup_progress;
+
+    private StorageReference storageReference;
+    private FirebaseAuth firebaseAuth;   //사용자 이메일 가져와서 닉네임에 써주기 위해해
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +50,13 @@ public class SetupActivity extends AppCompatActivity {
         ab.show();
         ab.setTitle("계정 설정");
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
+
         profile_image = findViewById(R.id.profile_image);
         setupName = findViewById(R.id.setup_name_text);
         setupBtn = findViewById(R.id.setup_btn);
+        setup_progress = findViewById(R.id.setup_progress);
 
         setupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,7 +64,24 @@ public class SetupActivity extends AppCompatActivity {
                 String user_name = setupName.getText().toString();
 
                 if (!TextUtils.isEmpty(user_name) && mainImageURI != null) {
+                    String user_id = firebaseAuth.getCurrentUser().getUid();
+                    setup_progress.setVisibility(View.VISIBLE);
 
+                    StorageReference image_path = storageReference.child("profile_images").child(user_id + ".jpg");
+                    image_path.putFile(mainImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                            if (task.isSuccessful()) {
+                                Task<Uri> download_uri = task.getResult().getMetadata().getReference().getDownloadUrl();
+                                Toast.makeText(SetupActivity.this, "이미지가 성공적으로 업로드되었습니다! ", Toast.LENGTH_LONG).show();
+                            } else {
+                                String error = task.getException().getMessage();
+                                Toast.makeText(SetupActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                            }
+                            setup_progress.setVisibility(View.INVISIBLE);
+                        }
+                    });
                 }
             }
         });
