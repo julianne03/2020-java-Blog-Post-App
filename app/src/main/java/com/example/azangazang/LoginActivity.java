@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.github.ybq.android.spinkit.sprite.Sprite;
+import com.github.ybq.android.spinkit.style.Wave;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -40,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         loginPassText = (EditText) findViewById(R.id.login_password);
         loginbtn = (Button) findViewById(R.id.btn_login);
         loginRegBtn = (Button) findViewById(R.id.btn_login_reg);
-        loginProgressbar = (ProgressBar) findViewById(R.id.login_progressBar);
+        loginProgressbar = (ProgressBar) findViewById(R.id.login_progress);
 
         androidx.appcompat.app.ActionBar ab = getSupportActionBar();
         ab.hide();
@@ -63,11 +65,9 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(!TextUtils.isEmpty(loginEmail) && !TextUtils.isEmpty(loginPass)) {
                     loginProgressbar.setVisibility(View.VISIBLE);
-
                     mAuth.signInWithEmailAndPassword(loginEmail,loginPass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-
 
                             if(task.isSuccessful()) {
                                 sendToMain();
