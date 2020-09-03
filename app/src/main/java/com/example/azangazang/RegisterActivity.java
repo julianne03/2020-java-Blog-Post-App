@@ -41,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         reg_confirm_pass = (EditText) findViewById(R.id.reg_confirm_password);
         reg_btn = (Button) findViewById(R.id.reg_reg_btn);
         reg_login = (Button) findViewById(R.id.reg_login);
-        reg_progress = (ProgressBar) findViewById(R.id.reg_progressbar);
+        reg_progress = (ProgressBar) findViewById(R.id.register_progress);
 
         androidx.appcompat.app.ActionBar ab = getSupportActionBar();
         ab.hide();
@@ -55,8 +55,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass) && !TextUtils.isEmpty(confirm_pass)) {
                     if(pass.equals(confirm_pass)) {
-
                         reg_progress.setVisibility(View.VISIBLE);
+
                         mAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
