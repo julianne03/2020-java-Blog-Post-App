@@ -54,12 +54,20 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
 
-            case R.id.action_logout_btn :
+            case R.id.action_logout_btn:
                 logout();
                 return true;
+            case R.id.action_settings_btn:
+                settings();
             default:
                 return false;
         }
+    }
+
+    private void settings() {
+        Intent Setting_page = new Intent(MainActivity.this, SetupActivity.class);
+        startActivity(Setting_page);
+        finish();
     }
 
     private void logout() {
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendToLogin() {
-        Intent loginIntent = new Intent(MainActivity.this,LoginActivity.class);
+        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(loginIntent);
         finish();
     }
