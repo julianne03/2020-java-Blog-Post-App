@@ -159,8 +159,8 @@ public class SetupActivity extends AppCompatActivity {
 
                     if (ContextCompat.checkSelfPermission(SetupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                        Toast.makeText(SetupActivity.this, "권한이 거부되었습니다.", Toast.LENGTH_LONG).show();
                         ActivityCompat.requestPermissions(SetupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
                     } else {
                         BringImagePicker();
                     }
