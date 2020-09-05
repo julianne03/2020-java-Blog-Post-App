@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     private void settings() {
         Intent Setting_page = new Intent(MainActivity.this, SetupActivity.class);
         startActivity(Setting_page);
-        finish();
     }
 
     private void logout() {
@@ -80,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
     private void sendToLogin() {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(loginIntent);
-        finish();
     }
 
 
