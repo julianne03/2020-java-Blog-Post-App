@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -28,11 +31,21 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
+import id.zelory.compressor.Compressor;
+
 
 public class NewPostActivity extends AppCompatActivity {
 
+    private static final int MAX_LENGTH = 100;
     private ImageView newPostImage;
     private EditText newPostTitle;
     private Button newPostBtn;
@@ -46,6 +59,8 @@ public class NewPostActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private String current_user_id;
+
+    private Bitmap compressedImageFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,10 +104,10 @@ public class NewPostActivity extends AppCompatActivity {
 
                     newPostProgressBar.setVisibility(View.VISIBLE);
 
-                    String randomName = FieldValue.serverTimestamp().toString();
+                    final String randomName = UUID.randomUUID().toString();
 
                     final StorageReference filePath = storageReference.child("post_images").child(randomName + ".jpg");
-                    UploadTask uploadTask = filePath.putFile(postImageUri);
+                    final UploadTask uploadTask = filePath.putFile(postImageUri);
 
                     Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                         @Override
@@ -106,35 +121,72 @@ public class NewPostActivity extends AppCompatActivity {
                         }
                     }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
+                        public void onComplete(@NonNull final Task<Uri> task) {
+
+                            final String downloadUri = task.getResult().toString();
 
                             if (task.isSuccessful()) {
 
-                                String downloadUri = task.getResult().toString();
+                                File newImageFile = new File(postImageUri.getPath());
 
-                                Map<String, Object> postMap = new HashMap<>();
-                                postMap.put("image_uri", downloadUri);
-                                postMap.put("title", title);
-                                postMap.put("user_id", current_user_id);
-                                postMap.put("timestamp", FieldValue.serverTimestamp());
+                                try {
+                                    compressedImageFile = new Compressor(NewPostActivity.this)
+                                            .setMaxHeight(100)
+                                            .setMaxWidth(100)
+                                            .setQuality(2)
+                                            .compressToBitmap(newImageFile);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
 
-                                firebaseFirestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                byte[] thumbdata = baos.toByteArray();
+
+                                UploadTask thumbFilePath = storageReference.child("post_images/thumbs")
+                                        .child(randomName + ".jpg").putBytes(thumbdata);
+
+                                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                        if (task.isSuccessful()) {
+                                        String thumbDownloadUri = task.getResult().toString();
 
-                                            Toast.makeText(NewPostActivity.this, "리뷰가 추가되었습니다!", Toast.LENGTH_LONG).show();
-                                            Intent mainIntent = new Intent(NewPostActivity.this, MainActivity.class);
-                                            startActivity(mainIntent);
+                                        Map<String, Object> postMap = new HashMap<>();
+                                        postMap.put("image_uri", downloadUri);
+                                        postMap.put("thumb", thumbDownloadUri);
+                                        postMap.put("title", title);
+                                        postMap.put("user_id", current_user_id);
+                                        postMap.put("timestamp", FieldValue.serverTimestamp());
 
-                                        } else {
+                                        firebaseFirestore.collection("Posts").add(postMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentReference> task) {
+
+                                                if (task.isSuccessful()) {
+
+                                                    Toast.makeText(NewPostActivity.this, "리뷰가 추가되었습니다!", Toast.LENGTH_LONG).show();
+                                                    Intent mainIntent = new Intent(NewPostActivity.this, MainActivity.class);
+                                                    startActivity(mainIntent);
+
+                                                } else {
 
 
-                                        }
-                                        newPostProgressBar.setVisibility(View.INVISIBLE);
+                                                }
+                                                newPostProgressBar.setVisibility(View.INVISIBLE);
+                                            }
+                                        });
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                        //Error handling
+
                                     }
                                 });
+
+
                             } else {
                                 newPostProgressBar.setVisibility(View.INVISIBLE);
                             }
@@ -162,5 +214,17 @@ public class NewPostActivity extends AppCompatActivity {
                 Exception error = result.getError();
             }
         }
+    }
+
+    public static String random() {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = generator.nextInt(MAX_LENGTH);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++) {
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
     }
 }
