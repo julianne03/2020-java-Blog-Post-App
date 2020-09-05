@@ -5,16 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FloatingActionButton addPostBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +28,16 @@ public class MainActivity extends AppCompatActivity {
 
         androidx.appcompat.app.ActionBar ab = getSupportActionBar();
         ab.show();
-        ab.setTitle("아장아장") ;
+        ab.setTitle("아장아장");
+
+        addPostBtn = findViewById(R.id.add_post_btn);
+        addPostBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newPostBtn = new Intent(MainActivity.this, NewPostActivity.class);
+                startActivity(newPostBtn);
+            }
+        });
 
     }
 
