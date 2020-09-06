@@ -10,9 +10,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,6 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     private String current_userId;
     private FloatingActionButton addPostBtn;
+
+    private BottomNavigationView mainBottomNav;
+
+    private RecommendFragment recommendFragment;
+    private ReviewFragment reviewFragment;
+    private FavoriteFragment favoriteFragment;
+    private SettingsFragment settingsFragment;
 
 
     @Override
@@ -41,12 +51,49 @@ public class MainActivity extends AppCompatActivity {
         ab.show();
         ab.setTitle("아장아장");
 
+        mainBottomNav = findViewById(R.id.mainNaviBottomBar);
+
+        //Fragments
+        recommendFragment = new RecommendFragment();
+        reviewFragment = new ReviewFragment();
+        favoriteFragment = new FavoriteFragment();
+        settingsFragment = new SettingsFragment();
+
+        mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                switch (item.getItemId()) {
+
+                    case R.id.bottom_action_reco:
+                        replaceFragment(recommendFragment);
+                        return true;
+
+                    case R.id.bottom_action_review:
+                        replaceFragment(reviewFragment);
+                        return true;
+
+                    case R.id.bottom_action_favorite:
+                        replaceFragment(favoriteFragment);
+                        return true;
+
+                    case R.id.bottom_action_settings:
+                        replaceFragment(settingsFragment);
+                        return true;
+
+                    default:
+                        return false;
+
+                }
+            }
+        });
+
         addPostBtn = findViewById(R.id.add_post_btn);
         addPostBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent newPostBtn = new Intent(MainActivity.this, NewPostActivity.class);
-                startActivity(newPostBtn);
+                Intent newPostIntent = new Intent(MainActivity.this, NewPostActivity.class);
+                startActivity(newPostIntent);
             }
         });
 
@@ -122,6 +169,13 @@ public class MainActivity extends AppCompatActivity {
     private void sendToLogin() {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(loginIntent);
+    }
+
+    private void replaceFragment(Fragment fragment) {
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_container, fragment);
+        fragmentTransaction.commit();
     }
 
 

@@ -45,7 +45,6 @@ import id.zelory.compressor.Compressor;
 
 public class NewPostActivity extends AppCompatActivity {
 
-    private static final int MAX_LENGTH = 100;
     private ImageView newPostImage;
     private EditText newPostTitle;
     private Button newPostBtn;
@@ -214,17 +213,5 @@ public class NewPostActivity extends AppCompatActivity {
                 Exception error = result.getError();
             }
         }
-    }
-
-    public static String random() {
-        Random generator = new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = generator.nextInt(MAX_LENGTH);
-        char tempChar;
-        for (int i = 0; i < randomLength; i++) {
-            tempChar = (char) (generator.nextInt(96) + 32);
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
     }
 }
