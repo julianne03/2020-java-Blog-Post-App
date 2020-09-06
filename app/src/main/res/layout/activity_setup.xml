@@ -8,7 +8,7 @@
 
 
     <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/blog_user_image"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:src="@drawable/profile"

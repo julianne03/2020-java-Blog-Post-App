@@ -23,7 +23,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -69,7 +68,7 @@ public class SetupActivity extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
 
-        profile_image = findViewById(R.id.profile_image);
+        profile_image = findViewById(R.id.blog_user_image);
         setupName = findViewById(R.id.setup_name_text);
         setupBtn = findViewById(R.id.setup_btn);
         setup_progress = findViewById(R.id.setup_progress);
