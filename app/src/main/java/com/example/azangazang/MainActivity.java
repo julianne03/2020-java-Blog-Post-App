@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -51,51 +52,61 @@ public class MainActivity extends AppCompatActivity {
         ab.show();
         ab.setTitle("아장아장");
 
-        mainBottomNav = findViewById(R.id.mainNaviBottomBar);
+        if (mAuth.getCurrentUser() != null) {
 
-        //Fragments
-        recommendFragment = new RecommendFragment();
-        reviewFragment = new ReviewFragment();
-        favoriteFragment = new FavoriteFragment();
-        settingsFragment = new SettingsFragment();
 
-        mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            mainBottomNav = findViewById(R.id.mainNaviBottomBar);
 
-                switch (item.getItemId()) {
+            //Fragments
+            recommendFragment = new RecommendFragment();
+            reviewFragment = new ReviewFragment();
+            favoriteFragment = new FavoriteFragment();
+            settingsFragment = new SettingsFragment();
 
-                    case R.id.bottom_action_reco:
-                        replaceFragment(recommendFragment);
-                        return true;
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+            fragmentTransaction.add(R.id.main_container, reviewFragment);
+            fragmentTransaction.commit();
 
-                    case R.id.bottom_action_review:
-                        replaceFragment(reviewFragment);
-                        return true;
 
-                    case R.id.bottom_action_favorite:
-                        replaceFragment(favoriteFragment);
-                        return true;
+            mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-                    case R.id.bottom_action_settings:
-                        replaceFragment(settingsFragment);
-                        return true;
+                    switch (item.getItemId()) {
 
-                    default:
-                        return false;
+                        case R.id.bottom_action_reco:
+                            replaceFragment(recommendFragment);
+                            return true;
 
+                        case R.id.bottom_action_review:
+                            replaceFragment(reviewFragment);
+                            return true;
+
+                        case R.id.bottom_action_favorite:
+                            replaceFragment(favoriteFragment);
+                            return true;
+
+                        case R.id.bottom_action_settings:
+                            replaceFragment(settingsFragment);
+                            return true;
+
+                        default:
+                            return false;
+
+                    }
                 }
-            }
-        });
+            });
 
-        addPostBtn = findViewById(R.id.add_post_btn);
-        addPostBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent newPostIntent = new Intent(MainActivity.this, NewPostActivity.class);
-                startActivity(newPostIntent);
-            }
-        });
+            addPostBtn = findViewById(R.id.add_post_btn);
+            addPostBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent newPostIntent = new Intent(MainActivity.this, NewPostActivity.class);
+                    startActivity(newPostIntent);
+                }
+            });
+        }
 
     }
 

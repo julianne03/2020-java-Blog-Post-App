@@ -1,18 +1,26 @@
 package com.example.azangazang;
 
 
+import java.util.Date;
+
 public class BlogPost {
 
-    public String user_id, image_url, title, image_thumb;
+    public String user_id, image_url, title, thumb;
+    public Date timestamp;
+
+    public BlogPost(Date timestamp) {
+        this.timestamp = timestamp;
+    }
 
     public BlogPost() {
     }
 
-    public BlogPost(String user_id, String image_url, String title, String image_thumb) {
+    public BlogPost(String user_id, String image_uri, String title, String thumb, Date timestamp) {
         this.user_id = user_id;
         this.image_url = image_url;
         this.title = title;
-        this.image_thumb = image_thumb;
+        this.thumb = thumb;
+        this.timestamp = timestamp;
     }
 
     public String getUser_id() {
@@ -23,11 +31,11 @@ public class BlogPost {
         this.user_id = user_id;
     }
 
-    public String getImage_url() {
+    public String getImage_uri() {
         return image_url;
     }
 
-    public void setImage_url(String image_url) {
+    public void setImage_uri(String image_url) {
         this.image_url = image_url;
     }
 
@@ -39,11 +47,19 @@ public class BlogPost {
         this.title = title;
     }
 
-    public String getImage_thumb() {
-        return image_thumb;
+    public String getThumb() {
+        return thumb;
     }
 
-    public void setImage_thumb(String image_thumb) {
-        this.image_thumb = image_thumb;
+    public void setThumb(String thumb) {
+        this.thumb = thumb;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 }
