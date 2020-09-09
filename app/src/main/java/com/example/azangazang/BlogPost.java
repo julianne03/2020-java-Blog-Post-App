@@ -3,7 +3,7 @@ package com.example.azangazang;
 
 import java.util.Date;
 
-public class BlogPost {
+public class BlogPost extends BlogPostId {
 
     public String user_id, image_url, title, thumb;
     public Date timestamp;
