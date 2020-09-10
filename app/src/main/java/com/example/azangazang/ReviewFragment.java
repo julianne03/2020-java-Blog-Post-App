@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,6 +36,7 @@ public class ReviewFragment extends Fragment {
 
     private RecyclerView blog_list_view;
     private List<BlogPost> blog_list;
+    private List<User> user_list;
 
     private FirebaseFirestore firebaseFirestore;
     private BlogRecyclerAdapter blogRecyclerAdapter;
@@ -51,11 +55,12 @@ public class ReviewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_review, container, false);
 
         blog_list = new ArrayList<>();
+        user_list = new ArrayList<>();
         blog_list_view = view.findViewById(R.id.blog_list_view);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        blogRecyclerAdapter = new BlogRecyclerAdapter(blog_list);
+        blogRecyclerAdapter = new BlogRecyclerAdapter(blog_list, user_list);
         blog_list_view.setLayoutManager(new LinearLayoutManager(getActivity()));
         blog_list_view.setAdapter(blogRecyclerAdapter);
         if (firebaseAuth.getCurrentUser() != null) {
@@ -87,37 +92,56 @@ public class ReviewFragment extends Fragment {
                 @Override
                 public void onEvent(QuerySnapshot value, FirebaseFirestoreException error) {
 
-                    if (isFirstPageFirstLoad) {
-                        lastVisible = value.getDocuments().get(value.size() - 1);
-                    }
+                    if (!value.isEmpty()) {
 
-                    if (error != null) {
-                        System.err.println(error);
-                    }
+                        if (isFirstPageFirstLoad) {
 
-                    for (DocumentChange doc : value.getDocumentChanges()) {
-                        if (doc.getType() == DocumentChange.Type.ADDED) {
+                            lastVisible = value.getDocuments().get(value.size() - 1);
+                            blog_list.clear();
+                            user_list.clear();
+                        }
+                        if (error != null) {
+                            System.err.println(error);
+                        }
 
-                            String blogPostId = doc.getDocument().getId();
-                            BlogPost blogPost = doc.getDocument().toObject(BlogPost.class).withId(blogPostId);
+                        for (DocumentChange doc : value.getDocumentChanges()) {
 
-                            if (isFirstPageFirstLoad) {
-                                blog_list.add(blogPost);
+                            if (doc.getType() == DocumentChange.Type.ADDED) {
+
+                                String blogPostId = doc.getDocument().getId();
+                                final BlogPost blogPost = doc.getDocument().toObject(BlogPost.class).withId(blogPostId);
+
+                                String blogUserId = doc.getDocument().getString("user_id");
+                                firebaseFirestore.collection("Users").document(blogUserId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                                        if (task.isSuccessful()) {
+
+                                            User user = task.getResult().toObject(User.class);
 
 
-                            } else {
-                                blog_list.add(0, blogPost);
+                                            if (isFirstPageFirstLoad) {
+
+                                                user_list.add(user);
+                                                blog_list.add(blogPost);
+
+                                            } else {
+                                                user_list.add(0, user);
+                                                blog_list.add(0, blogPost);
+                                            }
+
+                                        }
+                                        blogRecyclerAdapter.notifyDataSetChanged();
+                                    }
+                                });
+
                             }
-                            blogRecyclerAdapter.notifyDataSetChanged();
-
-
                         }
                     }
-                    isFirstPageFirstLoad = false;
                 }
             });
         }
-
 
         // Inflate the layout for this fragment
         return view;
@@ -145,9 +169,23 @@ public class ReviewFragment extends Fragment {
 
                         for (DocumentChange doc : value.getDocumentChanges()) {
                             if (doc.getType() == DocumentChange.Type.ADDED) {
-                                BlogPost blogPost = doc.getDocument().toObject(BlogPost.class);
-                                blog_list.add(blogPost);
-                                blogRecyclerAdapter.notifyDataSetChanged();
+                                final BlogPost blogPost = doc.getDocument().toObject(BlogPost.class);
+                                String blogUserId = doc.getDocument().getString("user_id");
+                                firebaseFirestore.collection("Users").document(blogUserId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                                        if (task.isSuccessful()) {
+
+                                            User user = task.getResult().toObject(User.class);
+
+                                            user_list.add(user);
+                                            blog_list.add(blogPost);
+
+                                            blogRecyclerAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                });
 
                             }
                         }
