@@ -109,7 +109,6 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
                 } else {
                     holder.updateLikesCount(0);
                 }
-
             }
         });
 
@@ -118,7 +117,7 @@ public class BlogRecyclerAdapter extends RecyclerView.Adapter<BlogRecyclerAdapte
             @Override
             public void onEvent(DocumentSnapshot value, FirebaseFirestoreException error) {
 
-                if (currentUserId != null && value.exists()) {
+                if (value.exists()) {
                     holder.blogLikeBtn.setImageDrawable(context.getDrawable(R.drawable.favorite_icon_accent));
                 } else {
                     holder.blogLikeBtn.setImageDrawable(context.getDrawable(R.drawable.favorite_icon_gray));
